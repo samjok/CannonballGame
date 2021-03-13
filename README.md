@@ -12,4 +12,4 @@ Shoot: z
 
 Game is over when green ball hits your cannon.
 
-![Example image](/public/example.png)
+![Example image](/public/example1.png)
