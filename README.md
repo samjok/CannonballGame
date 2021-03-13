@@ -1,7 +1,5 @@
 # Cannonball 0.1.0
 
-### Simple browser game made by vanilla Javascript
-
 ## Keyboard controls: 
 
 ```
@@ -13,3 +11,5 @@ Shoot: z
 ```
 
 Game is over when green ball hits your cannon.
+
+![Example image](/public/example.png)
