@@ -91,37 +91,36 @@ class Cannon {
 
 // Cannonball
 class Cannonball {
-  constructor(gameWidth, gameHeight, character) {
+  constructor(gameWidth, gameHeight, cannon) {
     this.radius = 5.0;
     this.gameWidth = gameWidth;
     this.gameHeight = gameHeight;
-    this.character = character;
+    this.cannon = cannon;
     this.launched = false;
 
     this.position = {
-      x: this.character.position.x + (this.character.width / 2),
-      y: this.character.position.y
+      x: this.cannon.position.x + (this.cannon.width / 2),
+      y: this.cannon.position.y
     }
 
     this.speed = {
-      x: this.character.speed.x,
-      y: this.character.speed.y,
+      x: this.cannon.speed.x,
+      y: this.cannon.speed.y,
     }
   }
 
   launch() {
     this.launched = true;
     this.speed = {
-      x: 0.3 * this.character.pipeLength * Math.cos(this.character.pipeAngle),
-      y: 0.3 * this.character.pipeLength * Math.sin(this.character.pipeAngle)
+      x: 0.6 * this.cannon.pipeLength * Math.cos(this.cannon.pipeAngle),
+      y: 0.6 * this.cannon.pipeLength * Math.sin(this.cannon.pipeAngle)
     }
-    console.log(this.speed)
   }
 
   draw(ctx) {
     ctx.beginPath();
-    Math.abs(this.character.position.x - this.position.x < 50)
-      && Math.abs(this.character.position.y - this.position.y < 50) ? ctx.fillStyle = 'green'
+    Math.abs(this.cannon.position.x - this.position.x < 50)
+      && Math.abs(this.cannon.position.y - this.position.y < 50) ? ctx.fillStyle = 'green'
       : ctx.fillStyle = 'red'
     ctx.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2);
     ctx.fill();
@@ -130,15 +129,15 @@ class Cannonball {
   update(dt) {
     if (!dt) return;
     if (!this.launched) {
-      this.speed = this.character.speed;
+      this.speed = this.cannon.speed;
     }
     if (this.position.x > this.gameWidth || this.position.x < 0
       || this.position.y < 0 || this.position.y > this.gameHeight) {
       this.position = {
-        x: this.character.position.x + (this.character.width / 2),
-        y: this.character.position.y
+        x: this.cannon.position.x + (this.cannon.width / 2),
+        y: this.cannon.position.y
       }
-      this.speed = this.character.speed;
+      this.speed = this.cannon.speed;
     }
 
     this.position.x += this.speed.x;
@@ -147,11 +146,11 @@ class Cannonball {
 }
 
 class Ball {
-  constructor(gameWidth, gameHeight, character, cannonball) {
+  constructor(gameWidth, gameHeight, cannon, cannonball) {
     this.radius = 50.0;
     this.gameWidth = gameWidth;
     this.gameHeight = gameHeight;
-    this.character = character;
+    this.cannon = cannon;
     this.cannonball = cannonball;
 
     this.position = {
@@ -166,7 +165,7 @@ class Ball {
   }
 
   draw(ctx) {
-    if (this.character.gameOver) return;
+    if (this.cannon.gameOver) return;
     ctx.beginPath();
     if (Math.abs(this.position.x - this.cannonball.position.x) < this.radius + this.cannonball.radius
       && Math.abs(this.position.y - this.cannonball.position.y) < this.radius + this.cannonball.radius) {
@@ -175,10 +174,21 @@ class Ball {
         x: Math.random() * this.gameWidth,
         y: 50
       }
-      this.character.points += 1;
+      if (Math.random() < 0.5) {
+        this.speed = {
+          x: 7,
+          y: 7,
+        }
+      } else {
+        this.speed = {
+          x: -7,
+          y: 7,
+        }
+      }
+      this.cannon.points += 1;
     }
-    else if (Math.abs((this.character.position.x + this.character.width / 2) - this.position.x) < 50
-      && Math.abs(this.character.position.y - this.position.y) < 50) {
+    else if (Math.abs((this.cannon.position.x + this.cannon.width / 2) - this.position.x) < 50
+      && Math.abs(this.cannon.position.y - this.position.y) < 50) {
       ctx.fillStyle = 'red';
     }
 
@@ -190,17 +200,13 @@ class Ball {
 
   update(dt) {
     if (!dt) return;
-    if (Math.abs((this.character.position.x + this.character.width / 2) - this.position.x) < this.radius + 50
-      && Math.abs(this.character.position.y - this.position.y) < this.radius + 50) {
-      this.character.gameOver = true;
+    if (Math.abs((this.cannon.position.x + this.cannon.width / 2) - this.position.x) < this.radius + 50
+      && Math.abs(this.cannon.position.y - this.position.y) < this.radius + 50) {
+      this.cannon.gameOver = true;
     }
-    if (this.character.points < 100) {
-      this.position.x += this.speed.x;
-      this.position.y += this.speed.y;
-    } else {
-      this.position.x = 1000;
-      this.position.y = 1000;
-    }
+    this.position.x += this.speed.x;
+    this.position.y += this.speed.y;
+
     if (this.position.x < this.radius) {
       this.speed.x = - this.speed.x;
     }
@@ -222,21 +228,21 @@ class Ball {
 
 // Input handler for keyboard events
 class InputHandler {
-  constructor(character, cannonball) {
+  constructor(cannon, cannonball) {
     document.addEventListener("keydown", event => {
       console.log('key', event.key);
       switch (event.key) {
         case 'ArrowLeft':
-          character.moveLeft();
+          cannon.moveLeft();
           break;
         case 'ArrowRight':
-          character.moveRight();
+          cannon.moveRight();
           break;
         case 'ArrowUp':
-          character.moveUp();
+          cannon.moveUp();
           break;
         case 'ArrowDown':
-          character.moveDown();
+          cannon.moveDown();
           break;
         case 'z':
           cannonball.launch();
@@ -248,12 +254,12 @@ class InputHandler {
       console.log('key', event.key);
       switch (event.key) {
         case 'ArrowLeft':
-          if (character.speed.x < 0)
-            character.stopX();
+          if (cannon.speed.x < 0)
+            cannon.stopX();
           break;
         case 'ArrowRight':
-          if (character.speed.x > 0)
-            character.stopX();
+          if (cannon.speed.x > 0)
+            cannon.stopX();
           break;
       }
     });
