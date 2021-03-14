@@ -278,12 +278,12 @@ let cannonball = new Cannonball(gameWidth, gameHeight, cannon);
 let ball = new Ball(gameWidth, gameHeight, cannon, cannonball);
 let handler = new InputHandler(cannon, cannonball);
 
+let lastTime = 0;
+
 // Gameloop 
 function gameLoop(timestamp) {
-  let lastTime = 0;
   let deltaTime = timestamp - lastTime;
   lastTime = timestamp;
-
   ctx.clearRect(0, 0, gameWidth, gameHeight);
   cannon.update(deltaTime)
   cannon.draw(ctx);

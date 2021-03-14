@@ -10,7 +10,7 @@ Turn cannon pipe to right: ArrowDown
 Shoot: z
 ```
 You get points when you shoot green balls.
-Game is over when ball hits your cannon or you collect 99 points.
+Game is over when ball hits your cannon.
 
 Try game online: http://keen-crowd.surge.sh/
 
