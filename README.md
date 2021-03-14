@@ -1,4 +1,4 @@
-# Cannonball 0.1.0
+# CannonballGame 0.1.0
 
 ## Keyboard controls: 
 
@@ -9,7 +9,14 @@ Turn cannon pipe to left: ArrowUp
 Turn cannon pipe to right: ArrowDown
 Shoot: z
 ```
+You get points when you shoot green balls.
+Game is over when ball hits your cannon or you collect 99 points.
 
-Game is over when green ball hits your cannon.
+Try game online: http://keen-crowd.surge.sh/
 
-![Example image](/public/example.png)
+![Example image](/public/example1.png)
+
+### TODO:
+- increase difficulty when player collects enough points
+- create menu window
+- create pause function
