@@ -1,3 +1,5 @@
+// TODO: Make own class for handling game state
+
 // Cannon
 class Cannon {
   constructor(gameWidth, gameHeight) {
@@ -6,10 +8,11 @@ class Cannon {
     this.gameWidth = gameWidth;
     this.gameHeight = gameHeight;
     this.pipeLength = 100;
-    this.pipeAngle = Math.PI * 1.5;
-    this.gameOver = false;
+    this.pipeAngle = Math.PI * 1.7;
 
+    this.gameOver = false;
     this.points = 0;
+    this.paused = false;
 
     this.position = {
       x: 0,
@@ -24,6 +27,10 @@ class Cannon {
     this.maxSpeed = 6;
   }
 
+  pause() {
+    this.paused = !this.paused;
+  }
+
   moveLeft() {
     if (!this.gameOver)
       this.speed.x = - this.maxSpeed;
@@ -34,13 +41,13 @@ class Cannon {
       this.speed.x = this.maxSpeed;
   }
 
-  moveUp() {
+  turnPipeLeft() {
     if (!this.gameOver)
       if (this.pipeAngle > Math.PI)
         this.pipeAngle -= 0.1;
   }
 
-  moveDown() {
+  turnPipeRight() {
     if (!this.gameOver)
       if (this.pipeAngle < 2 * Math.PI)
         this.pipeAngle += 0.1;
@@ -60,6 +67,8 @@ class Cannon {
     ctx.arc(this.position.x + (this.width / 2), this.position.y, 50, Math.PI, Math.PI * 2)
     ctx.lineWidth = "15";
     ctx.moveTo(this.position.x + (this.width / 2), this.position.y);
+
+    // cannon pipe
     ctx.lineTo(this.position.x + (this.width / 2) +
       this.pipeLength * Math.cos(this.pipeAngle),
       this.position.y + this.pipeLength * Math.sin(this.pipeAngle));
@@ -96,7 +105,6 @@ class Cannonball {
     this.gameWidth = gameWidth;
     this.gameHeight = gameHeight;
     this.cannon = cannon;
-    this.launched = false;
 
     this.position = {
       x: this.cannon.position.x + (this.cannon.width / 2),
@@ -110,10 +118,9 @@ class Cannonball {
   }
 
   launch() {
-    this.launched = true;
     this.speed = {
-      x: 0.6 * this.cannon.pipeLength * Math.cos(this.cannon.pipeAngle),
-      y: 0.6 * this.cannon.pipeLength * Math.sin(this.cannon.pipeAngle)
+      x: 60 * Math.cos(this.cannon.pipeAngle),
+      y: 60 * Math.sin(this.cannon.pipeAngle)
     }
   }
 
@@ -128,9 +135,6 @@ class Cannonball {
 
   update(dt) {
     if (!dt) return;
-    if (!this.launched) {
-      this.speed = this.cannon.speed;
-    }
     if (this.position.x > this.gameWidth || this.position.x < 0
       || this.position.y < 0 || this.position.y > this.gameHeight) {
       this.position = {
@@ -139,7 +143,6 @@ class Cannonball {
       }
       this.speed = this.cannon.speed;
     }
-
     this.position.x += this.speed.x;
     this.position.y += this.speed.y;
   }
@@ -170,22 +173,6 @@ class Ball {
     if (Math.abs(this.position.x - this.cannonball.position.x) < this.radius + this.cannonball.radius
       && Math.abs(this.position.y - this.cannonball.position.y) < this.radius + this.cannonball.radius) {
       ctx.fillStyle = 'blue';
-      this.position = {
-        x: Math.random() * this.gameWidth,
-        y: 50
-      }
-      if (Math.random() < 0.5) {
-        this.speed = {
-          x: 7,
-          y: 7,
-        }
-      } else {
-        this.speed = {
-          x: -7,
-          y: 7,
-        }
-      }
-      this.cannon.points += 1;
     }
     else if (Math.abs((this.cannon.position.x + this.cannon.width / 2) - this.position.x) < 50
       && Math.abs(this.cannon.position.y - this.position.y) < 50) {
@@ -199,11 +186,31 @@ class Ball {
   }
 
   update(dt) {
-    if (!dt) return;
+    if (!dt || this.cannon.gameOver) return;
     if (Math.abs((this.cannon.position.x + this.cannon.width / 2) - this.position.x) < this.radius + 50
       && Math.abs(this.cannon.position.y - this.position.y) < this.radius + 50) {
       this.cannon.gameOver = true;
     }
+    if (Math.abs(this.position.x - this.cannonball.position.x) < this.radius + this.cannonball.radius
+      && Math.abs(this.position.y - this.cannonball.position.y) < this.radius + this.cannonball.radius) {
+      this.position = {
+        x: Math.random() * this.gameWidth,
+        y: 50
+      }
+      this.cannon.points += 1;
+      if (Math.random() < 0.5) {
+        this.speed = {
+          x: 7,
+          y: 7,
+        }
+      } else {
+        this.speed = {
+          x: -7,
+          y: 7,
+        }
+      }
+    }
+
     this.position.x += this.speed.x;
     this.position.y += this.speed.y;
 
@@ -239,13 +246,16 @@ class InputHandler {
           cannon.moveRight();
           break;
         case 'ArrowUp':
-          cannon.moveUp();
+          !cannon.paused && cannon.turnPipeLeft();
           break;
         case 'ArrowDown':
-          cannon.moveDown();
+          !cannon.paused && cannon.turnPipeRight();
           break;
         case 'z':
           cannonball.launch();
+          break;
+        case 'Escape':
+          cannon.pause();
           break;
       }
     });
@@ -285,11 +295,13 @@ function gameLoop(timestamp) {
   let deltaTime = timestamp - lastTime;
   lastTime = timestamp;
   ctx.clearRect(0, 0, gameWidth, gameHeight);
-  cannon.update(deltaTime)
+  if (!cannon.paused) {
+    cannon.update(deltaTime)
+    cannonball.update(deltaTime)
+    ball.update(deltaTime)
+  }
   cannon.draw(ctx);
-  cannonball.update(deltaTime)
   cannonball.draw(ctx);
-  ball.update(deltaTime)
   ball.draw(ctx);
   ctx.lineWidth = "2";
   ctx.font = "30px Arial";

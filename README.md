@@ -19,4 +19,3 @@ Try game online: http://keen-crowd.surge.sh/
 ### TODO:
 - increase difficulty when player collects enough points
 - create menu window
-- create pause function
