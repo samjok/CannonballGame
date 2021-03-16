@@ -209,7 +209,7 @@ class Ball {
     if (!dt || game.cannon.gameOver) return;
     if (Math.abs((game.cannon.position.x + game.cannon.width / 2) - this.position.x) < this.radius + 50
       && Math.abs(game.cannon.position.y - this.position.y) < this.radius + 50) {
-      game.cannon.gameOver = true;
+      game.gameOver = true;
     }
     if (Math.abs(this.position.x - game.cannonball.position.x) < this.radius + game.cannonball.radius
       && Math.abs(this.position.y - game.cannonball.position.y) < this.radius + game.cannonball.radius) {
@@ -251,7 +251,6 @@ class Ball {
     }
   }
 }
-
 
 // Input handler for keyboard events
 class InputHandler {
@@ -311,7 +310,7 @@ function gameLoop(timestamp) {
   let deltaTime = timestamp - lastTime;
   lastTime = timestamp;
   ctx.clearRect(0, 0, gameWidth, gameHeight);
-  if (!game.paused) {
+  if (!game.paused && !game.gameOver) {
     game.update(deltaTime)
   }
   game.draw(ctx);
