@@ -16,18 +16,27 @@ class Game {
     this.cannonball = new Cannonball(this);
     this.ball = new Ball(this);
     this.handler = new InputHandler(this);
+    if (this.points > 19) {
+      this.ball2 = new Ball(this);
+    }
   }
 
   update(deltaTime) {
     this.cannon.update(deltaTime);
     this.cannonball.update(deltaTime);
     this.ball.update(deltaTime);
+    if (this.points > 19) {
+      this.ball2.update(deltaTime);
+    }
   }
 
   draw(ctx) {
     this.cannon.draw(ctx);
     this.cannonball.draw(ctx);
     this.ball.draw(ctx);
+    if (this.points > 19) {
+      this.ball2.draw(ctx);
+    }
   }
 }
 
