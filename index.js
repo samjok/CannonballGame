@@ -16,27 +16,21 @@ class Game {
     this.cannonball = new Cannonball(this);
     this.ball = new Ball(this);
     this.handler = new InputHandler(this);
-    if (this.points > 19) {
-      this.ball2 = new Ball(this);
-    }
+    this.ball2 = new Ball(this);
   }
 
   update(deltaTime) {
     this.cannon.update(deltaTime);
     this.cannonball.update(deltaTime);
     this.ball.update(deltaTime);
-    if (this.points > 19) {
-      this.ball2.update(deltaTime);
-    }
+    this.points > 19 && this.ball2.update(deltaTime);
   }
 
   draw(ctx) {
     this.cannon.draw(ctx);
     this.cannonball.draw(ctx);
     this.ball.draw(ctx);
-    if (this.points > 19) {
-      this.ball2.draw(ctx);
-    }
+    this.points > 19 && this.ball2.draw(ctx);
   }
 }
 
@@ -199,12 +193,8 @@ class Ball {
       return;
     }
     ctx.beginPath();
-    if (Math.abs(this.position.x - game.cannonball.position.x) < this.radius + game.cannonball.radius
-      && Math.abs(this.position.y - game.cannonball.position.y) < this.radius + game.cannonball.radius) {
-      ctx.fillStyle = 'blue';
-    }
-    else if (Math.abs((game.cannon.position.x + game.cannon.width / 2) - this.position.x) < 50
-      && Math.abs(game.cannon.position.y - this.position.y) < 50) {
+    if (Math.abs((game.cannon.position.x + game.cannon.width / 2) - this.position.x) < 50 + this.radius
+      && Math.abs(game.cannon.position.y - this.position.y) < 50 + this.radius) {
       ctx.fillStyle = 'red';
     }
 
