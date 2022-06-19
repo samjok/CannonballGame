@@ -12,7 +12,6 @@ Shoot: z
 You get points when you shoot green balls.
 Game is over when ball hits your cannon.
 
-Try game online: http://keen-crowd.surge.sh/
 
 ![Example image](/public/example1.png)
 
